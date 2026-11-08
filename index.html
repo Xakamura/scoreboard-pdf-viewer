@@ -43,7 +43,7 @@
     if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
     const viewer = document.querySelector('#viewer');
     const pages = document.querySelector('#pages');
-    if (!viewer || viewer.style.display === 'none' || !pages || !document.activeElement.closest('input,select,textarea')) return;
+    if (!viewer || viewer.style.display === 'none' || !pages || document.activeElement.closest('input,select,textarea')) return;
     event.preventDefault();
     const amount = Math.max(320, viewer.clientHeight - 90);
     const horizontal = pages.classList.contains('scroll');
