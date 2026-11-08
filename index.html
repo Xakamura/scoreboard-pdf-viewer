@@ -49,8 +49,15 @@
     const fullscreenGrid = document.fullscreenElement && !horizontal;
     const firstPage = pages.querySelector('.page-card');
     const amount = fullscreenGrid && firstPage ? firstPage.getBoundingClientRect().height + 18 : Math.max(320, viewer.clientHeight - 90);
+    const direction = event.key === 'PageDown' ? 1 : -1;
+    if (!horizontal && document.fullscreenElement) {
+      const rows = [...new Set([...pages.querySelectorAll('.page-card')].map(card => card.offsetTop))].sort((a,b)=>a-b);
+      const current = viewer.scrollTop + 24;
+      const next = direction > 0 ? rows.find(top => top > current + 4) : [...rows].reverse().find(top => top < current - 4);
+      if (next !== undefined) { viewer.scrollTo({top:Math.max(0,next - 20),behavior:'smooth'}); return; }
+    }
     const target = horizontal ? pages : viewer;
-    target.scrollBy({left: horizontal ? (event.key === 'PageDown' ? amount : -amount) : 0, top: horizontal ? 0 : (event.key === 'PageDown' ? amount : -amount), behavior: 'smooth'});
+    target.scrollBy({left: horizontal ? direction * amount : 0, top: horizontal ? 0 : direction * amount, behavior:'smooth'});
   });
 </script>
 <script>
