@@ -15,7 +15,7 @@
     .empty{min-height:490px;display:grid;place-items:center;padding:45px}.drop{border:1px dashed #68735b;background:#1a2017;border-radius:18px;padding:54px 70px;text-align:center;max-width:520px;width:100%;transition:.2s}.drop.drag{border-color:var(--accent);background:#26351f}.note{color:var(--muted);font-size:12px;margin-top:10px}.music{font-size:42px;line-height:1;color:var(--accent);font-family:Georgia;margin-bottom:15px}.hint{color:var(--muted);font-size:12px;margin:16px 0 0}
     #viewer{display:none;padding:24px;min-height:540px;background:#0d0f0c}.pages{display:grid;gap:18px;align-items:start}.pages.grid-1{grid-template-columns:1fr}.pages.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.pages.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.pages.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.pages.scroll{display:flex;overflow-x:auto;align-items:flex-start;padding-bottom:16px}.page-card{background:#f8f7f1;padding:8px;border-radius:3px;box-shadow:0 15px 30px #0007;min-width:0}.scroll .page-card{flex:0 0 auto;width:min(68vw,760px)}canvas{display:block;width:100%;height:auto}.page-num{text-align:center;color:#68705f;font-size:10px;padding:5px 0 0}.loading{color:var(--muted);text-align:center;padding:80px}.status{padding:12px 18px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);display:none}.status.show{display:block}@media(max-width:800px){header{padding:0 18px}main{padding:30px 14px}.hero{display:block}.upload{margin-top:22px;min-width:0}.toolbar{flex-wrap:wrap}.spacer{display:none}.pages.grid-3,.pages.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.drop{padding:42px 22px}}
     .workspace:fullscreen{border-radius:0;background:#0d0f0c}.workspace:fullscreen #viewer{height:calc(100vh - 66px);overflow:auto;padding:20px}.workspace:fullscreen .page-card{display:flex;flex-direction:column;align-items:center}.workspace:fullscreen canvas{width:auto;max-width:100%;max-height:calc(100vh - 145px)}
-    .workspace:fullscreen canvas{-webkit-font-smoothing:antialiased;image-rendering:auto}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI","Yu Gothic",Meiryo,sans-serif}
+    .workspace:fullscreen canvas{-webkit-font-smoothing:antialiased;image-rendering:auto}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI","Yu Gothic",Meiryo,sans-serif}.pages.scroll{gap:0}.pages.scroll .page-card{margin-right:calc(var(--overlap,80px) * -1)}
   </style>
 </head>
 <body>
@@ -50,5 +50,19 @@
     const target = horizontal ? pages : viewer;
     target.scrollBy({left: horizontal ? (event.key === 'PageDown' ? amount : -amount) : 0, top: horizontal ? 0 : (event.key === 'PageDown' ? amount : -amount), behavior: 'smooth'});
   });
+</script>
+<script>
+  const overlapControl = document.createElement('div');
+  overlapControl.className = 'control';
+  overlapControl.id = 'overlapControl';
+  overlapControl.innerHTML = '<span>重なり</span><input id="overlap" type="number" min="0" max="240" step="10" value="80" style="width:64px" title="次のページを見せる幅（px）"><span>px</span>';
+  document.querySelector('.toolbar .spacer').before(overlapControl);
+  const overlap = document.querySelector('#overlap');
+  const pagesForOverlap = document.querySelector('#pages');
+  const updateOverlap = () => pagesForOverlap.style.setProperty('--overlap', `${Math.max(0, Math.min(240, Number(overlap.value) || 0))}px`);
+  overlap.addEventListener('input', updateOverlap); updateOverlap();
+  const updateOverlapVisibility = () => { overlapControl.style.opacity = document.querySelector('.mode[data-mode="scroll"]').classList.contains('active') ? '1' : '.35'; };
+  document.querySelectorAll('.mode[data-mode]').forEach(button => button.addEventListener('click', updateOverlapVisibility));
+  updateOverlapVisibility();
 </script>
 </body></html>
