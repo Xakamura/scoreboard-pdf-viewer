@@ -54,6 +54,8 @@
   });
 </script>
 <script>
+  document.querySelector('#choose')?.addEventListener('click',()=>document.querySelector('#file')?.click());
+  window.addEventListener('error',e=>{const s=document.querySelector('#status');if(s){s.classList.add('show');s.textContent='読み込みエラー：ページを再読み込みしてください。';}});
   const overlapControl = document.createElement('div');
   overlapControl.className = 'control';
   overlapControl.id = 'overlapControl';
