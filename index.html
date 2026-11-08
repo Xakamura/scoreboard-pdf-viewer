@@ -70,6 +70,13 @@
   document.querySelector('.toolbar .spacer').before(overlapControl);
   const overlap = document.querySelector('#overlap');
   const pagesForOverlap = document.querySelector('#pages');
+  const rowsControl = document.createElement('div');
+  rowsControl.className = 'control';
+  rowsControl.innerHTML = '<span>行数</span><select id="rows"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>';
+  overlapControl.before(rowsControl);
+  const rows = document.querySelector('#rows');
+  const updateRows = () => pagesForOverlap.style.setProperty('--rows', rows.value);
+  rows.addEventListener('change', updateRows); updateRows();
   const updateOverlap = () => pagesForOverlap.style.setProperty('--overlap', `${Math.max(0, Math.min(240, Number(overlap.value) || 0))}px`);
   overlap.addEventListener('input', updateOverlap); updateOverlap();
   const updateOverlapVisibility = () => { overlapControl.style.opacity = document.querySelector('.mode[data-mode="scroll"]').classList.contains('active') ? '1' : '.35'; };
