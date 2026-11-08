@@ -45,8 +45,10 @@
     const pages = document.querySelector('#pages');
     if (!viewer || viewer.style.display === 'none' || !pages || document.activeElement.closest('input,select,textarea')) return;
     event.preventDefault();
-    const amount = Math.max(320, viewer.clientHeight - 90);
     const horizontal = pages.classList.contains('scroll');
+    const fullscreenGrid = document.fullscreenElement && !horizontal;
+    const firstPage = pages.querySelector('.page-card');
+    const amount = fullscreenGrid && firstPage ? firstPage.getBoundingClientRect().height + 18 : Math.max(320, viewer.clientHeight - 90);
     const target = horizontal ? pages : viewer;
     target.scrollBy({left: horizontal ? (event.key === 'PageDown' ? amount : -amount) : 0, top: horizontal ? 0 : (event.key === 'PageDown' ? amount : -amount), behavior: 'smooth'});
   });
