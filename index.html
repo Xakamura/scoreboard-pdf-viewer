@@ -38,4 +38,17 @@
   async function render(){ if(!pdf)return; const pages=$('#pages'); pages.innerHTML='<div class="loading">ページを描画しています…</div>'; pages.className='pages '+(mode==='scroll'?'scroll':'grid-'+$('#cols').value); const frag=document.createDocumentFragment(); for(let n=1;n<=pdf.numPages;n++){const p=await pdf.getPage(n), base=p.getViewport({scale:1}), width=mode==='scroll'?700:Math.min(900,(document.querySelector('#viewer').clientWidth-48-18*($('#cols').value-1))/$('#cols').value), scale=width/base.width*zoom, v=p.getViewport({scale}); const card=document.createElement('div');card.className='page-card';const c=document.createElement('canvas');c.width=v.width;c.height=v.height;card.append(c);const label=document.createElement('div');label.className='page-num';label.textContent=`${n} / ${pdf.numPages}`;card.append(label);frag.append(card);await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;} pages.innerHTML='';pages.append(frag); $('#status').textContent=`${pdf.numPages}ページ　・　${mode==='scroll'?'横スクロール':'敷き詰め'}　・　倍率 ${Math.round(zoom*100)}%`; }
   document.querySelectorAll('.mode[data-mode]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.mode[data-mode]').forEach(x=>x.classList.remove('active'));b.classList.add('active');mode=b.dataset.mode;$('#countControl').style.opacity=mode==='scroll'?'.35':'1';render()}); $('#cols').onchange=render; $('#minus').onclick=()=>{zoom=Math.max(.5,zoom-.1);$('#zoomText').textContent=Math.round(zoom*100)+'%';render()}; $('#plus').onclick=()=>{zoom=Math.min(1.8,zoom+.1);$('#zoomText').textContent=Math.round(zoom*100)+'%';render()}; $('#fullscreen').onclick=async()=>{if(!document.fullscreenElement){await $('.workspace').requestFullscreen();$('#fullscreen').textContent='⛶ 終了'}else{await document.exitFullscreen();$('#fullscreen').textContent='⛶ 全画面'}}; document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)$('#fullscreen').textContent='⛶ 全画面'}); $('#clear').onclick=()=>location.reload();
 </script>
+<script>
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
+    const viewer = document.querySelector('#viewer');
+    const pages = document.querySelector('#pages');
+    if (!viewer || viewer.style.display === 'none' || !pages || !document.activeElement.closest('input,select,textarea')) return;
+    event.preventDefault();
+    const amount = Math.max(320, viewer.clientHeight - 90);
+    const horizontal = pages.classList.contains('scroll');
+    const target = horizontal ? pages : viewer;
+    target.scrollBy({left: horizontal ? (event.key === 'PageDown' ? amount : -amount) : 0, top: horizontal ? 0 : (event.key === 'PageDown' ? amount : -amount), behavior: 'smooth'});
+  });
+</script>
 </body></html>
